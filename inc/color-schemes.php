@@ -4,9 +4,10 @@
  *
  * Port of the Drupal theme's color/color.inc. Drupal's Color module recoloured
  * the theme by regenerating images and rewriting stylesheets on save. WordPress
- * has no equivalent, so the schemes are kept as data here and applied as inline
- * CSS: the derived tints are computed the same way Drupal's blend did, by
- * mixing the base colour toward the blend target (white).
+ * has no equivalent, and this port has no images to regenerate: the schemes are
+ * kept as data here and applied by re-declaring the design tokens that
+ * css/colors.css sets up. The derived tints are computed the same way Drupal's
+ * blend did, by mixing the base colour toward the blend target (white).
  *
  * @package Garland
  */
@@ -232,9 +233,15 @@ function garland_shade( $hex, $amount ) {
 }
 
 /**
- * Build the CSS overrides for a colour scheme.
+ * Build the CSS for a colour scheme.
  *
- * The default scheme is already baked into css/colors.css, so it emits nothing.
+ * Every colour in the stylesheets is a custom property declared on :root in
+ * css/colors.css, so a scheme only has to re-declare those properties: the
+ * gradients, rules and hover states that consume them follow on their own.
+ * The tints below use the same ratios the default token values were read off.
+ *
+ * The default scheme is what css/colors.css already declares, so it emits
+ * nothing.
  *
  * @param string $scheme_id Scheme key.
  * @return string CSS.
@@ -252,70 +259,42 @@ function garland_color_scheme_css( $scheme_id ) {
 	$link   = $c['link'];
 	$top    = $c['top'];
 	$bottom = $c['bottom'];
-	$text   = $c['text'];
 
-	// Derived tints, matching the ratios the default stylesheet uses.
-	$header_edge     = garland_shade( $top, 0.45 );
-	$header_shadow   = garland_shade( $bottom, 0.3 );
-	$container_start = garland_tint( $base, 0.79 );
-	$container_end   = garland_tint( $base, 0.93 );
-	$center_start    = garland_tint( $base, 0.92 );
-	$crumb_start     = garland_tint( $base, 0.76 );
-	$crumb_end       = garland_tint( $base, 0.84 );
-	$rule            = garland_tint( $base, 0.83 );
-	$soft_rule       = garland_tint( $base, 0.90 );
-	$row_odd         = garland_tint( $base, 0.93 );
-	$link_hover      = garland_shade( $link, 0.2 );
-	$link_active     = garland_tint( $link, 0.35 );
-	$crumb_text      = garland_tint( $base, 0.35 );
-	$secondary_link  = garland_tint( $top, 0.8 );
+	$tokens = array(
+		'header-edge'      => garland_shade( $top, 0.45 ),
+		'header-top'       => $top,
+		'header-bottom'    => $bottom,
+		'header-shadow'    => garland_shade( $bottom, 0.3 ),
+		'on-header-muted'  => garland_tint( $top, 0.8 ),
 
-	ob_start();
-	?>
-body { color: <?php echo esc_html( $text ); ?>; }
+		'text'             => $c['text'],
+		'link'             => $link,
+		'link-hover'       => garland_shade( $link, 0.2 ),
+		'link-active'      => garland_tint( $link, 0.35 ),
 
-a:link, a:visited { color: <?php echo esc_html( $link ); ?>; }
-a:hover { color: <?php echo esc_html( $link_hover ); ?>; }
-a:active, a.active { color: <?php echo esc_html( $link_active ); ?>; }
+		'surface-tint'     => garland_tint( $base, 0.92 ),
+		'sidebar-top'      => garland_tint( $base, 0.79 ),
+		'sidebar-bottom'   => garland_tint( $base, 0.93 ),
+		'content-top'      => garland_tint( $base, 0.92 ),
+		'row-alt'          => garland_tint( $base, 0.93 ),
 
-#header {
-	background-image: linear-gradient(to bottom, <?php echo esc_html( $header_edge ); ?> 1px, <?php echo esc_html( $top ); ?> 5px, <?php echo esc_html( $bottom ); ?> 116px);
-	background-color: <?php echo esc_html( $bottom ); ?>;
-	box-shadow: inset 0 -3px 4px -2px <?php echo esc_html( $header_shadow ); ?>;
-}
+		'crumb-start'      => garland_tint( $base, 0.76 ),
+		'crumb-end'        => garland_tint( $base, 0.84 ),
+		'crumb-text'       => garland_tint( $base, 0.35 ),
 
-#container {
-	background-image: linear-gradient(to bottom, <?php echo esc_html( $container_start ); ?> 0px, <?php echo esc_html( $container_end ); ?> 178px);
-}
+		'rule'             => garland_tint( $base, 0.83 ),
+		'rule-soft'        => garland_tint( $base, 0.90 ),
+		'rule-form'        => garland_tint( $base, 0.85 ),
 
-#center {
-	background-image: linear-gradient(to bottom, <?php echo esc_html( $center_start ); ?> 0px, #ffffff 178px);
-}
+		'tab-top'          => garland_tint( $base, 0.65 ),
+		'tab-bottom'       => garland_tint( $base, 0.51 ),
+	);
 
-#breadcrumb {
-	background-image: linear-gradient(to right, <?php echo esc_html( $crumb_start ); ?>, <?php echo esc_html( $crumb_end ); ?> 40px);
-	box-shadow: -3px -3px 4px -2px <?php echo esc_html( $header_shadow ); ?>, 3px -3px 4px -2px <?php echo esc_html( $header_shadow ); ?>;
-}
+	$css = ":root {\n";
+	foreach ( $tokens as $name => $value ) {
+		$css .= "\t--garland-{$name}: " . esc_html( $value ) . ";\n";
+	}
+	$css .= "}\n";
 
-#breadcrumb-inner {
-	background-image: linear-gradient(to left, <?php echo esc_html( $crumb_start ); ?>, <?php echo esc_html( $crumb_end ); ?> 40px, rgba(0, 0, 0, 0) 40px);
-}
-
-#container .region-breadcrumb,
-#container .region-breadcrumb a { color: <?php echo esc_html( $crumb_text ); ?>; }
-
-#branding, #branding a:link, #branding a:visited { text-shadow: <?php echo esc_html( $header_edge ); ?> 0 1px 3px; }
-
-.region-secondary-menu ul li a,
-.region-secondary-menu ul li a:link,
-.region-secondary-menu ul li a:visited,
-.region-secondary-menu ul li a:hover { color: <?php echo esc_html( $secondary_link ); ?>; }
-
-thead th { border-bottom-color: <?php echo esc_html( $rule ); ?>; color: <?php echo esc_html( $text ); ?>; }
-tr.even, tr.odd, tbody th { border-color: <?php echo esc_html( $rule ); ?>; }
-tr.odd, tr.info { background-color: <?php echo esc_html( $row_odd ); ?>; }
-
-.node, #comments, .comment, nav.primary-tabs, ul.secondary { border-color: <?php echo esc_html( $soft_rule ); ?>; }
-	<?php
-	return trim( ob_get_clean() ) . "\n";
+	return $css;
 }

@@ -113,8 +113,12 @@ function garland_scripts() {
 	// style.css carries the theme header; enqueued so child themes can depend on it.
 	wp_enqueue_style( 'garland-style', get_stylesheet_uri(), array( 'garland-wordpress' ), GARLAND_VERSION );
 
-	// Customizer-driven overrides: fixed/fluid width and the colour scheme.
-	wp_add_inline_style( 'garland-style', garland_dynamic_css() );
+	// Customizer-driven overrides: the colour scheme's design tokens.
+	$garland_scheme_css = garland_color_scheme_css( garland_get_option( 'garland_color_scheme' ) );
+
+	if ( '' !== $garland_scheme_css ) {
+		wp_add_inline_style( 'garland-style', $garland_scheme_css );
+	}
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
@@ -126,7 +130,8 @@ add_action( 'wp_enqueue_scripts', 'garland_scripts' );
  * Body classes.
  *
  * Port of garland_preprocess_html(): width toggle plus the sidebar-count
- * classes the layout and print stylesheets key off.
+ * classes the layout and print stylesheets key off. The width toggle is a
+ * class only -- .fixed-width in css/layout.css sets the page's max width.
  */
 function garland_body_classes( $classes ) {
 	$classes[] = ( 'fixed' === garland_get_option( 'garland_width' ) ) ? 'fixed-width' : 'fluid-width';
@@ -195,21 +200,6 @@ function garland_get_option( $name ) {
 	$default = isset( $defaults[ $name ] ) ? $defaults[ $name ] : '';
 
 	return get_theme_mod( $name, $default );
-}
-
-/**
- * Build the inline CSS for the width toggle and the active colour scheme.
- */
-function garland_dynamic_css() {
-	$css = '';
-
-	if ( 'fixed' === garland_get_option( 'garland_width' ) ) {
-		$css .= "#header, #container { max-width: 960px; margin-left: auto; margin-right: auto; }\n";
-	}
-
-	$css .= garland_color_scheme_css( garland_get_option( 'garland_color_scheme' ) );
-
-	return $css;
 }
 
 /**

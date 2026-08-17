@@ -69,7 +69,7 @@ function garland_customize_register( $wp_customize ) {
 		'garland_color_scheme',
 		array(
 			'label'       => __( 'Color scheme', 'garland' ),
-			'description' => __( 'The colour schemes shipped with the original theme. Schemes recolour the gradients, links and rules; the small background images (menu bullets, tab and navigation-item backgrounds) keep their original colours.', 'garland' ),
+			'description' => __( 'The colour schemes shipped with the original theme. A scheme recolours the whole theme -- gradients, links, rules, tabs and the navigation pointer alike.', 'garland' ),
 			'section'     => 'garland_options',
 			'type'        => 'select',
 			'choices'     => $choices,

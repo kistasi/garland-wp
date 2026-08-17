@@ -1,3 +1,10 @@
+/**
+ * @file
+ * Print styles.
+ *
+ * The Drupal original targeted the #wrapper/#squeeze markup this port does not
+ * render; these rules address the markup that actually exists.
+ */
 
 body,
 input,
@@ -9,53 +16,50 @@ select {
   font-size: 11pt;
 }
 
-ul.main-menu,
-ul.secondary-menu,
-#header-region,
-.sidebar {
+/* Chrome, navigation and widget areas carry nothing worth printing. */
+#skip-link,
+#breadcrumb,
+.header-menus,
+.region-header,
+.region-footer,
+.sidebar,
+.links,
+.pager,
+.comment-respond,
+.search-form {
   display: none;
 }
 
-body.layout-two-sidebars,
-body.sidebar-first,
-body.sidebar-second,
-body {
-  width: 640px;
-}
-
-body.sidebar-first #center,
-body.sidebar-second #center,
-body.layout-two-sidebars #center,
-body.sidebar-first #squeeze,
-body.sidebar-second #squeeze,
-body.layout-two-sidebars #squeeze {
+/* Flatten the page frame: one column, no gradients, no negative offsets. */
+#header,
+#container,
+#center,
+#content {
+  display: block;
+  max-inline-size: none;
   margin: 0;
-}
-
-#wrapper,
-#wrapper #container .region-breadcrumb,
-#wrapper #container #center,
-#wrapper #container #center .right-corner,
-#wrapper #container #center .right-corner .left-corner,
-#wrapper #container #footer,
-#wrapper #container #center #squeeze {
-  position: static;
-  left: 0;
   padding: 0;
-  margin: 0;
-  width: auto;
-  float: none;
-  clear: both;
+  min-block-size: 0;
   background: none;
+  box-shadow: none;
+  border: 0;
 }
 
-#wrapper #container #header {
-  height: 130px;
-}
-
-#wrapper #container #header h1,
-#wrapper #container #header h1 a:link,
-#wrapper #container #header h1 a:visited {
-  text-shadow: none;
+#branding,
+#branding a:is(:link, :visited) {
   color: #000;
+  text-shadow: none;
+}
+
+.node {
+  margin-inline: 0;
+  border: 0;
+  break-inside: avoid;
+}
+
+/* Spell out where a link went, since it cannot be followed on paper. */
+#content a[href^="http"]::after {
+  content: " (" attr(href) ")";
+  font-size: 0.9em;
+  word-break: break-all;
 }

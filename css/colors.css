@@ -1,76 +1,133 @@
 /**
  * @file
- * Garland colors.
+ * Garland design tokens, and the surfaces painted from them.
+ *
+ * Every colour in the theme resolves to one of the custom properties declared
+ * below, which makes a colour scheme nothing more than a different set of
+ * values for this block: garland_color_scheme_css() in inc/color-schemes.php
+ * re-declares them on :root and the whole theme follows.
+ *
+ * The values here are the original Garland ones, taken from the bitmaps the
+ * theme used to ship (the header and breadcrumb gradients, bg-tab.png and
+ * gradient-inner.png) so the default scheme still renders pixel-for-pixel.
  */
+
+:root {
+  color-scheme: light;
+
+  /* Header. */
+  --garland-header-edge: #134d95;
+  --garland-header-top: #2384c0;
+  --garland-header-bottom: #59b4ed;
+  --garland-header-shadow: #2881d6;
+  --garland-on-header: #fff;
+  --garland-on-header-muted: #cde3f1;
+
+  /* Text and links. */
+  --garland-text: #494949;
+  --garland-text-muted: #898989;
+  --garland-link: #027ac6;
+  --garland-link-hover: #0062a0;
+  --garland-link-active: #5895be;
+  --garland-accent: #ffae00;
+  --garland-scrim: rgb(0 0 0 / 0.6);
+
+  /* Surfaces. */
+  --garland-surface: #fff;
+  --garland-surface-tint: #ebf4fa; /* Was images/gradient-inner.png. */
+  --garland-sidebar-top: #cae2f0;
+  --garland-sidebar-bottom: #edf5fa;
+  --garland-content-top: #ebf4f9;
+  --garland-row-alt: #edf5fa;
+
+  /* Breadcrumb. */
+  --garland-crumb-start: #bddff6;
+  --garland-crumb-end: #d5ebf9;
+  --garland-crumb-text: #529ad6;
+
+  /* Rules and borders. */
+  --garland-rule: #d3e7f4;
+  --garland-rule-soft: #e9eff3;
+  --garland-rule-form: #d9eaf5;
+
+  /* Local task tabs. Was images/bg-tab.png. */
+  --garland-tab-top: #a6cee7;
+  --garland-tab-bottom: #82badd;
+
+  /*
+   * Vector assets.
+   *
+   * The list markers and the details disclosure arrow used to be GIFs in
+   * images/; they are inline SVG here, so the theme ships no bitmaps at all.
+   */
+  --garland-bullet: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9'%3E%3Ccircle cx='4.5' cy='4.5' r='3' fill='%23fff' stroke='%23b4b4b4'/%3E%3C/svg%3E");
+  --garland-caret-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M1.5 3h7L5 7.5z' fill='%23fff' stroke='%23b4b4b4' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --garland-caret-end: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M3 1.5v7L7.5 5z' fill='%23fff' stroke='%23b4b4b4' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --garland-caret-start: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M7 1.5v7L2.5 5z' fill='%23fff' stroke='%23b4b4b4' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
 
 body {
   font: 76%/170% Verdana, sans-serif;
-  color: #494949;
+  color: var(--garland-text);
 }
 
+/**
+ * Header.
+ *
+ * The top edge is a border rather than a gradient stop because WebKit could
+ * not render hard transitions in gradients; the menu block is moved up 1px to
+ * sit on it (see .header-menus in layout.css).
+ */
 #header {
-  /*
-  This is a border rather than part of the gradient because webkit can't render
-  hard transitions in gradients.
-  This also requires the primary menu to be moved up 1px.
-  */
-  border-top: solid white 1px;
-  border-bottom: solid white 1px;
-
+  border-block: solid var(--garland-surface) 1px;
+  background-color: var(--garland-header-bottom);
   background-image: linear-gradient(
     to bottom,
-    #134D95 1px,
-    #2384C0 5px,
-    #59B4ED 116px
+    var(--garland-header-edge) 1px,
+    var(--garland-header-top) 5px,
+    var(--garland-header-bottom) 116px
   );
-  background-color: #59B4ED;
-  box-shadow: inset 0px -3px 4px -2px #2881D6;
+  box-shadow: inset 0 -3px 4px -2px var(--garland-header-shadow);
 }
 
 /**
  * Container.
  *
- * This is actually the background colour for the sidebars, but is here because
- * of the outer padding on this element.
+ * This is the background for the sidebars; it lives on the container because
+ * of the outer padding on that element.
  */
 #container {
   background-image: linear-gradient(
     to bottom,
-    #CAE2F0 0px,
-    #EDF5FA 178px
+    var(--garland-sidebar-top) 0,
+    var(--garland-sidebar-bottom) 178px
   );
 }
 
 #center {
   background-image: linear-gradient(
     to bottom,
-    #EBF4F9 0px,
-    #FFFFFF 178px
+    var(--garland-content-top) 0,
+    var(--garland-surface) 178px
   );
 }
 
 /**
  * Breadcrumb.
  *
- * This needs two DIVs to make both ends of the gradient.
+ * Both ends of the gradient used to need a wrapper element each; a single
+ * multi-stop gradient now does it on one element.
  */
 #breadcrumb {
+  border: solid 1px var(--garland-surface);
   background-image: linear-gradient(
     to right,
-    #BDDFF6,
-    #D5EBF9 40px
+    var(--garland-crumb-start),
+    var(--garland-crumb-end) 40px,
+    var(--garland-crumb-end) calc(100% - 40px),
+    var(--garland-crumb-start)
   );
-  border: solid 1px white;
   box-shadow:
-      -3px -3px 4px -2px #2881D6,
-      3px -3px 4px -2px #2881D6;
-}
-
-#breadcrumb-inner {
-  background-image: linear-gradient(
-    to left,
-    #BDDFF6,
-    #D5EBF9 40px,
-    rgba(0, 0, 0, 0) 40px
-  );
+    -3px -3px 4px -2px var(--garland-header-shadow),
+    3px -3px 4px -2px var(--garland-header-shadow);
 }

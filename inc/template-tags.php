@@ -43,14 +43,26 @@ function garland_branding() {
 }
 
 /**
- * Breadcrumb trail.
- *
- * Replaces Drupal's breadcrumb block with an equivalent for WordPress's
- * hierarchy: home, then the ancestors of the current page/term/post.
+ * Print the breadcrumb trail.
  */
 function garland_breadcrumb() {
+	// Built from escaped values in garland_get_breadcrumb().
+	echo garland_get_breadcrumb(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+/**
+ * Build the breadcrumb trail.
+ *
+ * Replaces Drupal's breadcrumb block with an equivalent for WordPress's
+ * hierarchy: home, then the ancestors of the current page/term/post. Returns
+ * an empty string when there is nothing to show, which is what header.php
+ * checks before drawing the breadcrumb bar at all.
+ *
+ * @return string Markup, or '' when there is no trail.
+ */
+function garland_get_breadcrumb() {
 	if ( is_front_page() ) {
-		return;
+		return '';
 	}
 
 	$crumbs = array(
@@ -100,17 +112,19 @@ function garland_breadcrumb() {
 	array_pop( $crumbs );
 
 	if ( empty( $crumbs ) ) {
-		return;
+		return '';
 	}
 
-	echo '<nav class="breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">';
-	echo '<h2 id="system-breadcrumb" class="visually-hidden">' . esc_html__( 'Breadcrumb', 'garland' ) . '</h2>';
-	echo '<ol>';
+	$markup  = '<nav class="breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">';
+	$markup .= '<h2 id="system-breadcrumb" class="visually-hidden">' . esc_html__( 'Breadcrumb', 'garland' ) . '</h2>';
+	$markup .= '<ol>';
 	foreach ( $crumbs as $crumb ) {
 		// Crumb strings are escaped as they are built above.
-		echo '<li>' . $crumb . '</li>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$markup .= '<li>' . $crumb . '</li>';
 	}
-	echo '</ol></nav>';
+	$markup .= '</ol></nav>';
+
+	return $markup;
 }
 
 /**
@@ -181,21 +195,24 @@ function garland_entry_links() {
 function garland_comment( $comment, $args, $depth ) {
 	$tag = ( 'div' === $args['style'] ) ? 'div' : 'li';
 	?>
-	<<?php echo esc_attr( $tag ); ?> id="comment-<?php comment_ID(); ?>" <?php comment_class( 'comment clearfix' ); ?>>
-		<div class="clearfix">
+	<<?php echo esc_attr( $tag ); ?> id="comment-<?php comment_ID(); ?>" <?php comment_class( 'comment' ); ?>>
+		<div class="comment-body">
 
-			<span class="submitted">
-				<?php
-				printf(
-					/* translators: 1: comment date, 2: comment author. */
-					esc_html__( '%1$s &mdash; %2$s', 'garland' ),
-					esc_html( get_comment_date() ),
-					wp_kses_post( get_comment_author_link() )
-				);
-				?>
-			</span>
+			<?php // Avatar and byline share a flex row; see .comment-meta in css/garland.css. ?>
+			<div class="comment-meta">
+				<?php echo get_avatar( $comment, 48 ); ?>
 
-			<?php echo get_avatar( $comment, 48 ); ?>
+				<span class="submitted">
+					<?php
+					printf(
+						/* translators: 1: comment date, 2: comment author. */
+						esc_html__( '%1$s &mdash; %2$s', 'garland' ),
+						esc_html( get_comment_date() ),
+						wp_kses_post( get_comment_author_link() )
+					);
+					?>
+				</span>
+			</div>
 
 			<div class="content">
 				<?php if ( '0' === $comment->comment_approved ) : ?>

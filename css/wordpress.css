@@ -15,6 +15,10 @@
 
 /**
  * 1. Utilities from Drupal's base theme.
+ *
+ * .clearfix survives because the templates still print it and widgets may
+ * float things inside a block; the theme's own layout no longer floats
+ * anything.
  */
 .clearfix::after {
   content: "";
@@ -26,48 +30,22 @@
 .screen-reader-text {
   position: absolute !important;
   overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
-  width: 1px;
-  height: 1px;
+  clip-path: inset(50%);
+  inline-size: 1px;
+  block-size: 1px;
   word-wrap: normal;
 }
 
-.visually-hidden.focusable:active,
-.visually-hidden.focusable:focus,
+.visually-hidden.focusable:is(:active, :focus),
 .screen-reader-text:focus {
   position: static !important;
   overflow: visible;
-  clip: auto;
-  width: auto;
-  height: auto;
-  background: #fff;
+  clip-path: none;
+  inline-size: auto;
+  block-size: auto;
+  background: var(--garland-surface);
   padding: 2px 10px;
   z-index: 1000;
-}
-
-/*
- * Link lists. garland.css styles ul.links li on the assumption that Drupal
- * core's links.css has already stripped the markers and laid the inline
- * variant out horizontally; nothing in WordPress supplies those base rules, so
- * the post and comment link lists rendered as bulleted stacks without them.
- */
-ul.links,
-ul.inline {
-  padding: 0;
-  list-style: none;
-  list-style-image: none;
-}
-
-ul.links.inline,
-ul.inline {
-  display: inline;
-}
-
-ul.links.inline li,
-ul.inline li {
-  display: inline;
-  list-style: none;
-  list-style-image: none;
 }
 
 .hidden {
@@ -78,68 +56,24 @@ ul.inline li {
  * 2. WordPress class -> Garland class mapping.
  */
 
-/*
- * Header.
- *
- * layout.css takes the branding out of flow (#logo-floater is absolutely
- * positioned) and pins #header to a fixed 120px height, which leaves the
- * header widget area nowhere to go: its content landed on top of the logo,
- * and the height it added pushed the right-floated menu regions past the
- * bottom of #header. Those escaped floats then shrank #container -- which is
- * a flex container, and so a block formatting context -- breaking the page
- * width and the fixed-width centring.
- *
- * header.php prints the header region after the menus so the floats keep
- * their position. These rules anchor the branding to #header itself rather
- * than to its static position, contain the floats, and let #header grow
- * downwards to hold the widgets.
- */
-#header {
-  position: relative;
-  height: auto;
-  min-height: 120px;
+/* Active trail in the menus: Garland styled a.active. */
+.region-primary-menu ul li:is(.current-menu-item, .current-menu-ancestor, .current_page_item) > a::before {
+  opacity: 1;
 }
 
-#header::after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-#header #logo-floater {
-  top: 0;
-  left: 20px; /* LTR */ /* Matches #header's own horizontal padding. */
-}
-
-/* Clear the branding band, whose height is #branding's 120px line-height. */
-.region-header {
-  padding-top: 120px;
-  padding-bottom: 10px;
-}
-
-/* Active trail in the primary menu: Garland styled a.active. */
-.region-primary-menu ul li.current-menu-item > a,
-.region-primary-menu ul li.current-menu-ancestor > a,
-.region-primary-menu ul li.current_page_item > a {
-  color: #fff;
-  background: transparent url(../images/bg-navigation-item-hover.png) no-repeat 50% 0;
-}
-
-.region-secondary-menu ul li.current-menu-item > a,
-.region-secondary-menu ul li.current-menu-ancestor > a {
+.region-secondary-menu ul li:is(.current-menu-item, .current-menu-ancestor) > a {
   font-weight: bold;
 }
 
-/* wp_nav_menu emits a plain <ul>; Garland's rules key off .menu. */
-.region-primary-menu ul.menu,
-.region-secondary-menu ul.menu {
-  list-style: none;
-  list-style-image: none;
-  padding: 0;
+/* Breadcrumb: an <ol> laid out as a row. */
+.region-breadcrumb {
+  --garland-crumb-separator: "\00bb"; /* » ; the RTL stylesheet flips it. */
 }
 
-/* Breadcrumb: an <ol> rendered inline. */
 .region-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.35em;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -147,17 +81,16 @@ ul.inline li {
 }
 
 .region-breadcrumb li {
-  display: inline;
   margin: 0;
   padding: 0;
 }
 
 .region-breadcrumb li + li::before {
-  content: " » ";
+  content: var(--garland-crumb-separator) " ";
 }
 
 /* Comment threads: wp_list_comments nests in ul.children where Drupal used
-   .indented, and the outer list must not inherit the menu bullet. */
+   .indented, and the outer list must not inherit the bullet marker. */
 .comment-list,
 .comment-list .children {
   list-style: none;
@@ -167,7 +100,7 @@ ul.inline li {
 }
 
 .comment-list .children {
-  margin-left: 25px; /* LTR */
+  margin-inline-start: var(--garland-content-pad);
 }
 
 .comment-list > li.comment {
@@ -175,8 +108,8 @@ ul.inline li {
 }
 
 .comment-respond {
-  margin: 1.5em 0;
-  padding-bottom: 1.5em;
+  margin-block: 1.5em;
+  padding-block-end: 1.5em;
 }
 
 .comment-reply-title {
@@ -189,37 +122,39 @@ ul.inline li {
   font-weight: bold;
 }
 
-.comment-form input[type="text"],
-.comment-form input[type="email"],
-.comment-form input[type="url"],
-.comment-form textarea {
-  max-width: 100%;
+.comment-form :is(input[type="text"], input[type="email"], input[type="url"], textarea) {
+  max-inline-size: 100%;
 }
 
 /* Widgets sit in the same visual box Drupal blocks did. */
 .widget {
-  margin: 0 0 1.5em;
+  margin-block: 0 1.5em;
 }
 
 .widget ul {
-  margin: 0.35em 0 0 -0.5em; /* LTR */
+  margin-block-start: 0.35em;
+  margin-inline-start: -0.5em;
 }
 
 /* Pager, in the same visual language as the local tasks. */
-.pager__items {
-  margin: 1.5em 0;
+.pager__items,
+.pagination .nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5em;
+  margin-block: 1.5em;
   padding: 0;
   list-style: none;
   list-style-image: none;
-  text-align: center;
 }
 
 .pager__item {
-  display: inline-block;
-  margin: 0 0.25em;
+  margin: 0;
 }
 
-.pager__item .current {
+.pager__item .current,
+.pagination .current {
   font-weight: bold;
 }
 
@@ -227,159 +162,95 @@ ul.inline li {
  * 3. WordPress-generated markup.
  */
 .alignleft {
-  display: inline;
   float: left;
-  margin-right: 1.5em;
+  margin-inline-end: 1.5em;
 }
 
 .alignright {
-  display: inline;
   float: right;
-  margin-left: 1.5em;
+  margin-inline-start: 1.5em;
 }
 
 .aligncenter {
   clear: both;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 .alignwide,
 .alignfull {
-  max-width: 100%;
+  max-inline-size: 100%;
 }
 
 img,
 .wp-caption img,
 .wp-block-image img {
-  max-width: 100%;
-  height: auto;
+  max-inline-size: 100%;
+  block-size: auto;
 }
 
 .wp-caption {
-  margin-bottom: 1.5em;
-  max-width: 100%;
+  margin-block-end: 1.5em;
+  max-inline-size: 100%;
 }
 
 .wp-caption-text,
 .wp-block-image figcaption {
   font-size: 0.92em;
-  color: #898989;
+  color: var(--garland-text-muted);
   text-align: center;
-  margin: 0.5em 0;
+  margin-block: 0.5em;
 }
 
+/* Galleries: a grid, with the column count coming from WordPress's own class. */
 .gallery {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 1em -0.5em;
+  --garland-gallery-columns: 3;
+
+  display: grid;
+  grid-template-columns: repeat(var(--garland-gallery-columns), 1fr);
+  gap: 1em;
+  margin-block: 1em;
 }
+
+.gallery-columns-1 { --garland-gallery-columns: 1; }
+.gallery-columns-2 { --garland-gallery-columns: 2; }
+.gallery-columns-4 { --garland-gallery-columns: 4; }
+.gallery-columns-5 { --garland-gallery-columns: 5; }
 
 .gallery-item {
-  margin: 0 0.5em 1em;
+  margin: 0;
   text-align: center;
 }
 
-.gallery-columns-2 .gallery-item { width: calc(50% - 1em); }
-.gallery-columns-3 .gallery-item { width: calc(33.33% - 1em); }
-.gallery-columns-4 .gallery-item { width: calc(25% - 1em); }
-
 .sticky .title::before {
-  content: "★ ";
-  color: #ffae00;
+  content: "\2605\00a0"; /* ★ */
+  color: var(--garland-accent);
 }
 
-.bypostauthor > .comment-body .submitted,
 .bypostauthor .submitted {
   font-weight: bold;
 }
 
 .post-password-form input[type="password"] {
-  max-width: 100%;
+  max-inline-size: 100%;
 }
 
 .node-navigation {
-  margin: 1.5em 0;
-}
-
-.node-navigation .nav-next {
-  float: right; /* LTR */
+  margin-block: 1.5em;
 }
 
 .wp-block-quote,
 blockquote {
-  border-left: 3px solid #d3e7f4; /* LTR */
-  margin: 1em 0;
-  padding-left: 1em; /* LTR */
+  border-inline-start: 3px solid var(--garland-rule);
+  margin-block: 1em;
+  padding-inline-start: 1em;
 }
 
 .wp-block-code,
 pre {
   overflow-x: auto;
-  background: #fff;
-  border: 1px solid #d9eaf5;
+  background: var(--garland-surface);
+  border: 1px solid var(--garland-rule-form);
+  border-radius: var(--garland-radius);
   padding: 0.75em;
-}
-
-/**
- * Small screens.
- *
- * Garland predates responsive design; the flex layout in layout.css needs a
- * stacking fallback so the sidebars do not squeeze the content on phones.
- */
-@media all and (max-width: 700px) {
-  #header,
-  #container {
-    padding: 0 10px;
-  }
-
-  #header {
-    height: auto;
-    min-height: 120px;
-    overflow: hidden;
-  }
-
-  #header #logo-floater {
-    position: static;
-  }
-
-  /* Branding is back in flow here, so its reserved band is not needed. */
-  .region-header {
-    padding-top: 0;
-  }
-
-  .region-primary-menu,
-  .region-secondary-menu {
-    float: none;
-    clear: both;
-  }
-
-  #container {
-    display: block;
-  }
-
-  #center {
-    margin-top: -34px;
-  }
-
-  .sidebar {
-    flex: none;
-    padding: 0;
-  }
-
-  #content {
-    padding: 0 10px;
-  }
-
-  #branding,
-  #branding a:link,
-  #branding a:visited {
-    line-height: 1.4;
-    white-space: normal;
-  }
-
-  #branding img {
-    padding-right: 10px; /* LTR */
-  }
 }

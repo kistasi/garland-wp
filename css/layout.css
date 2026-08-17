@@ -1,118 +1,191 @@
 /**
  * @file
- * Garland layout styling.
+ * Garland layout.
+ *
+ * The page frame: header, the three columns and the footer. Everything is
+ * flexbox and logical properties, so the RTL stylesheet has almost nothing
+ * left to override.
  */
+
+:root {
+  /* Metrics, so the same number is never written twice. */
+  --garland-gutter: 20px;
+  --garland-content-pad: 25px;
+  --garland-sidebar-width: 195px;
+  --garland-sidebar-gap: 15px;
+  --garland-header-height: 120px;
+  --garland-breadcrumb-height: 34px;
+  --garland-radius: 5px;
+
+  /* Overridden by .fixed-width below; `none` is the fluid layout. */
+  --garland-page-max: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  padding: 0;
 }
 
-#header, #container {
-  padding: 0 20px;
+/* The Customizer's "Fixed width" option is just this one declaration. */
+.fixed-width {
+  --garland-page-max: 960px;
 }
 
+#header,
+#container {
+  max-inline-size: var(--garland-page-max);
+  margin-inline: auto;
+  padding-inline: var(--garland-gutter);
+}
+
+/**
+ * Header.
+ *
+ * Branding on one side, the two menus stacked on the other, the header widget
+ * area on a full-width row underneath. Nothing is floated or taken out of
+ * flow, so #header sizes itself around whatever it holds.
+ */
 #header {
-  height: 120px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  column-gap: 2rem;
+  min-block-size: var(--garland-header-height);
 }
 
-#header #logo-floater {
-  position: absolute;
+#logo-floater {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--garland-header-height);
 }
 
-/**
- * Primary navigation
- */
-.region-primary-menu {
-  /* Needs to sit on top of the #header border. */
-  margin-top: -1px;
-  padding: 0;
-  float: right; /* LTR */
+.header-menus {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  row-gap: 18px;
+  /* Push the menus to the far edge, and the primary one onto the top border. */
+  margin-inline-start: auto;
+  margin-block-start: -1px;
   position: relative;
   z-index: 4;
 }
 
+.region-header {
+  flex-basis: 100%;
+  padding-block-end: 10px;
+}
+
 /**
- * Secondary navigation
+ * The three columns.
  */
-.region-secondary-menu {
-  margin: 0;
-  padding: 18px 0 0;
-  float: right; /* LTR */
-  clear: right; /* LTR */
-  position: relative;
-  z-index: 4;
+#container {
+  display: flex;
+  gap: var(--garland-sidebar-gap);
+  min-block-size: 100dvh;
+}
+
+#center {
+  flex: 1;
+  order: 2;
+  /* Without this a wide table or a long word would stretch the column. */
+  min-inline-size: 0;
+}
+
+.sidebar {
+  flex: 0 0 var(--garland-sidebar-width);
+  min-inline-size: 0;
+  margin-block-start: 16px;
+}
+
+#sidebar-first {
+  order: 1;
+}
+
+#sidebar-second {
+  order: 3;
+}
+
+#container .sidebar .block,
+#container .sidebar .widget {
+  margin-block: 0 1.5em;
 }
 
 /**
  * Breadcrumb.
  */
 #breadcrumb {
-  /* The height of the breadcrumb box minus its borders. */
-  height: 32px;
-
-  border-top-left-radius:2px;
-  border-top-right-radius:2px;
-}
-
-#breadcrumb-inner {
-  min-height: 100%;
-  padding: 0 25px;
-}
-
-/**
- * The container for the 3 columns of content and sidebars.
- */
-#container {
   display: flex;
-  flex-direction: row;
-  min-height: 100vh;
+  align-items: center;
+  min-block-size: var(--garland-breadcrumb-height);
+  padding-inline: var(--garland-content-pad);
+  border-start-start-radius: 2px;
+  border-start-end-radius: 2px;
+  /* Lift the bar out of the column so it laps onto the header above it. */
+  margin-block-start: calc(var(--garland-breadcrumb-height) * -1);
 }
 
 /**
- * Layout for the 3 columns.
- */
-.sidebar {
-  flex: 0 0 195px;
-}
-
-#center {
-  width: auto;
-  flex: 1;
-  order: 2;
-
-  /* The height of the breadcrumb box. */
-  margin-top: -34px;
-}
-
-#sidebar-first {
-  order: 1;
-  padding-right: 15px;
-}
-
-#sidebar-second {
-  order: 3;
-  padding-left: 15px;
-}
-
-/**
- * Element padding and margins.
+ * Content and footer.
  */
 #content {
-  padding: 0 25px;
-}
-
-.sidebar,
-#content {
-  margin-top: 16px;
-}
-
-#container .sidebar .block {
-  margin: 0 0 1.5em 0;
+  margin-block-start: 16px;
+  padding-inline: var(--garland-content-pad);
 }
 
 #container .region-footer {
-  float: none;
-  clear: both;
-  margin: 4em 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5em;
+  margin-block-start: 4em;
+}
+
+/**
+ * Small screens.
+ *
+ * Garland predates responsive design: below the breakpoint the columns stack
+ * and the header unwinds into a single column.
+ */
+@media (width <= 700px) {
+  :root {
+    --garland-gutter: 10px;
+    --garland-content-pad: 10px;
+  }
+
+  #header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #logo-floater {
+    min-block-size: auto;
+    padding-block: 1em;
+  }
+
+  .header-menus {
+    align-items: flex-start;
+    margin-inline-start: 0;
+  }
+
+  #container {
+    display: block;
+  }
+
+  /*
+   * Stacked, the header ends with the widget area rather than with the
+   * branding band, so the breadcrumb sits below it instead of lapping onto it.
+   */
+  #breadcrumb {
+    margin-block-start: 0;
+  }
+
+  .sidebar {
+    margin-block-start: 1.5em;
+  }
 }

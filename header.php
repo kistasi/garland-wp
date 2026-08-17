@@ -28,52 +28,57 @@
 
 	<?php garland_branding(); ?>
 
-	<?php if ( has_nav_menu( 'primary' ) ) : ?>
-		<div class="region region-primary-menu">
-			<nav role="navigation" aria-labelledby="primary-menu-heading">
-				<h2 id="primary-menu-heading" class="visually-hidden"><?php esc_html_e( 'Primary menu', 'garland' ); ?></h2>
-				<?php
-				wp_nav_menu(
-					array(
-						'theme_location' => 'primary',
-						'container'      => false,
-						'menu_class'     => 'links inline main-menu menu clearfix',
-						'depth'          => 1,
-					)
-				);
-				?>
-			</nav>
-		</div>
-	<?php endif; ?>
+	<?php if ( has_nav_menu( 'primary' ) || has_nav_menu( 'secondary' ) ) : ?>
+		<div class="header-menus">
 
-	<?php if ( has_nav_menu( 'secondary' ) ) : ?>
-		<div class="region region-secondary-menu">
-			<nav role="navigation" aria-labelledby="secondary-menu-heading">
-				<h2 id="secondary-menu-heading" class="visually-hidden"><?php esc_html_e( 'Secondary menu', 'garland' ); ?></h2>
-				<?php
-				wp_nav_menu(
-					array(
-						'theme_location' => 'secondary',
-						'container'      => false,
-						'menu_class'     => 'links inline secondary-menu menu clearfix',
-						'depth'          => 1,
-					)
-				);
-				?>
-			</nav>
-		</div>
+			<?php if ( has_nav_menu( 'primary' ) ) : ?>
+				<div class="region region-primary-menu">
+					<nav role="navigation" aria-labelledby="primary-menu-heading">
+						<h2 id="primary-menu-heading" class="visually-hidden"><?php esc_html_e( 'Primary menu', 'garland' ); ?></h2>
+						<?php
+						wp_nav_menu(
+							array(
+								'theme_location' => 'primary',
+								'container'      => false,
+								'menu_class'     => 'links inline main-menu menu',
+								'depth'          => 1,
+							)
+						);
+						?>
+					</nav>
+				</div>
+			<?php endif; ?>
+
+			<?php if ( has_nav_menu( 'secondary' ) ) : ?>
+				<div class="region region-secondary-menu">
+					<nav role="navigation" aria-labelledby="secondary-menu-heading">
+						<h2 id="secondary-menu-heading" class="visually-hidden"><?php esc_html_e( 'Secondary menu', 'garland' ); ?></h2>
+						<?php
+						wp_nav_menu(
+							array(
+								'theme_location' => 'secondary',
+								'container'      => false,
+								'menu_class'     => 'links inline secondary-menu menu',
+								'depth'          => 1,
+							)
+						);
+						?>
+					</nav>
+				</div>
+			<?php endif; ?>
+
+		</div> <!-- /.header-menus -->
 	<?php endif; ?>
 
 	<?php
 	/*
-	 * The header region is printed last on purpose. The branding is taken out
-	 * of flow by #logo-floater and the two menu regions are floated right, so
-	 * any in-flow content placed before them would land on top of the logo and
-	 * push the floats out of #header. See the header rules in css/wordpress.css.
+	 * #header is a flex row that wraps: branding and .header-menus share the
+	 * first line, and this region takes the full width of the next one. See
+	 * the header rules in css/layout.css.
 	 */
 	?>
 	<?php if ( is_active_sidebar( 'header' ) ) : ?>
-		<div class="region region-header clearfix">
+		<div class="region region-header">
 			<?php dynamic_sidebar( 'header' ); ?>
 		</div>
 	<?php endif; ?>
@@ -84,12 +89,21 @@
 
 	<div id="center">
 
-		<div id="breadcrumb">
-			<div id="breadcrumb-inner">
+		<?php
+		/*
+		 * The breadcrumb bar laps up onto the header; it is drawn only when
+		 * there is a trail to put in it. One element does it: the gradient
+		 * runs in from both ends in a single multi-stop linear-gradient, so
+		 * the inner wrapper the Drupal theme needed is gone.
+		 */
+		$garland_breadcrumb = garland_get_breadcrumb();
+		?>
+		<?php if ( $garland_breadcrumb ) : ?>
+			<div id="breadcrumb">
 				<div class="region region-breadcrumb">
-					<?php garland_breadcrumb(); ?>
+					<?php echo $garland_breadcrumb; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</div>
 			</div>
-		</div>
+		<?php endif; ?>
 
 		<div id="content">
