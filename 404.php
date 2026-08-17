@@ -8,11 +8,7 @@
 get_header();
 ?>
 
-<div class="region region-title-tabs clearfix">
-	<div class="block block-page-title-block">
-		<h1 class="title"><?php esc_html_e( 'Page not found', 'garland' ); ?></h1>
-	</div>
-</div>
+<?php garland_page_title( __( 'Page not found', 'garland' ) ); ?>
 
 <?php get_template_part( 'template-parts/region', 'top' ); ?>
 

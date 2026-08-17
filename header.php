@@ -24,65 +24,73 @@
 	<a href="#main-content" class="visually-hidden focusable"><?php esc_html_e( 'Skip to main content', 'garland' ); ?></a>
 </div>
 
+<?php
+/*
+ * #header carries the gradient and spans the window; .header-inner is the
+ * part that lines up with the content below it, and in "fixed width" mode it
+ * is the element the max width applies to. See css/layout.css.
+ */
+?>
 <div id="header">
+	<div class="header-inner">
 
-	<?php garland_branding(); ?>
+		<?php garland_branding(); ?>
 
-	<?php if ( has_nav_menu( 'primary' ) || has_nav_menu( 'secondary' ) ) : ?>
-		<div class="header-menus">
+		<?php if ( has_nav_menu( 'primary' ) || has_nav_menu( 'secondary' ) ) : ?>
+			<div class="header-menus">
 
-			<?php if ( has_nav_menu( 'primary' ) ) : ?>
-				<div class="region region-primary-menu">
-					<nav role="navigation" aria-labelledby="primary-menu-heading">
-						<h2 id="primary-menu-heading" class="visually-hidden"><?php esc_html_e( 'Primary menu', 'garland' ); ?></h2>
-						<?php
-						wp_nav_menu(
-							array(
-								'theme_location' => 'primary',
-								'container'      => false,
-								'menu_class'     => 'links inline main-menu menu',
-								'depth'          => 1,
-							)
-						);
-						?>
-					</nav>
-				</div>
-			<?php endif; ?>
+				<?php if ( has_nav_menu( 'primary' ) ) : ?>
+					<div class="region region-primary-menu">
+						<nav role="navigation" aria-labelledby="primary-menu-heading">
+							<h2 id="primary-menu-heading" class="visually-hidden"><?php esc_html_e( 'Primary menu', 'garland' ); ?></h2>
+							<?php
+							wp_nav_menu(
+								array(
+									'theme_location' => 'primary',
+									'container'      => false,
+									'menu_class'     => 'links inline main-menu menu',
+									'depth'          => 1,
+								)
+							);
+							?>
+						</nav>
+					</div>
+				<?php endif; ?>
 
-			<?php if ( has_nav_menu( 'secondary' ) ) : ?>
-				<div class="region region-secondary-menu">
-					<nav role="navigation" aria-labelledby="secondary-menu-heading">
-						<h2 id="secondary-menu-heading" class="visually-hidden"><?php esc_html_e( 'Secondary menu', 'garland' ); ?></h2>
-						<?php
-						wp_nav_menu(
-							array(
-								'theme_location' => 'secondary',
-								'container'      => false,
-								'menu_class'     => 'links inline secondary-menu menu',
-								'depth'          => 1,
-							)
-						);
-						?>
-					</nav>
-				</div>
-			<?php endif; ?>
+				<?php if ( has_nav_menu( 'secondary' ) ) : ?>
+					<div class="region region-secondary-menu">
+						<nav role="navigation" aria-labelledby="secondary-menu-heading">
+							<h2 id="secondary-menu-heading" class="visually-hidden"><?php esc_html_e( 'Secondary menu', 'garland' ); ?></h2>
+							<?php
+							wp_nav_menu(
+								array(
+									'theme_location' => 'secondary',
+									'container'      => false,
+									'menu_class'     => 'links inline secondary-menu menu',
+									'depth'          => 1,
+								)
+							);
+							?>
+						</nav>
+					</div>
+				<?php endif; ?>
 
-		</div> <!-- /.header-menus -->
-	<?php endif; ?>
+			</div> <!-- /.header-menus -->
+		<?php endif; ?>
 
-	<?php
-	/*
-	 * #header is a flex row that wraps: branding and .header-menus share the
-	 * first line, and this region takes the full width of the next one. See
-	 * the header rules in css/layout.css.
-	 */
-	?>
-	<?php if ( is_active_sidebar( 'header' ) ) : ?>
-		<div class="region region-header">
-			<?php dynamic_sidebar( 'header' ); ?>
-		</div>
-	<?php endif; ?>
+		<?php
+		/*
+		 * .header-inner is a flex row that wraps: branding and .header-menus share
+		 * the first line, and this region takes the full width of the next one.
+		 */
+		?>
+		<?php if ( is_active_sidebar( 'header' ) ) : ?>
+			<div class="region region-header">
+				<?php dynamic_sidebar( 'header' ); ?>
+			</div>
+		<?php endif; ?>
 
+	</div> <!-- /.header-inner -->
 </div> <!-- /#header -->
 
 <div id="container" class="clearfix">

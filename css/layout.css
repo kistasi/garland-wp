@@ -27,8 +27,16 @@
   box-sizing: border-box;
 }
 
+/*
+ * The page is a column: header, then the three columns, which take whatever
+ * height is left over. Putting the viewport height here rather than on
+ * #container is what keeps a short page from scrolling by the header's height.
+ */
 body {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
 }
 
 /* The Customizer's "Fixed width" option is just this one declaration. */
@@ -36,21 +44,24 @@ body {
   --garland-page-max: 960px;
 }
 
-#header,
+.header-inner,
 #container {
   max-inline-size: var(--garland-page-max);
   margin-inline: auto;
   padding-inline: var(--garland-gutter);
+  inline-size: 100%;
 }
 
 /**
  * Header.
  *
- * Branding on one side, the two menus stacked on the other, the header widget
- * area on a full-width row underneath. Nothing is floated or taken out of
- * flow, so #header sizes itself around whatever it holds.
+ * The band itself spans the window -- in fixed-width mode the gradient still
+ * runs edge to edge, as it did in the original -- and .header-inner holds the
+ * content: branding on one side, the two menus stacked on the other, the
+ * header widget area on a full-width row underneath. Nothing is floated or
+ * taken out of flow, so the header sizes itself around whatever it holds.
  */
-#header {
+.header-inner {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -87,7 +98,7 @@ body {
 #container {
   display: flex;
   gap: var(--garland-sidebar-gap);
-  min-block-size: 100dvh;
+  flex: 1;
 }
 
 #center {
@@ -111,9 +122,20 @@ body {
   order: 3;
 }
 
-#container .sidebar .block,
-#container .sidebar .widget {
+/*
+ * Blocks are spaced apart wherever a region puts them. before_widget in
+ * garland_widgets_init() prints .block; .widget is there for widgets that
+ * bring their own wrapper.
+ */
+.region .block,
+.region .widget {
   margin-block: 0 1.5em;
+}
+
+/* Except in the header, where the region shares the branding band. */
+.region-header .block,
+.region-header .widget {
+  margin-block-end: 0;
 }
 
 /**
@@ -158,7 +180,7 @@ body {
     --garland-content-pad: 10px;
   }
 
-  #header {
+  .header-inner {
     flex-direction: column;
     align-items: stretch;
   }

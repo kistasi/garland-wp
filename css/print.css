@@ -31,7 +31,9 @@ select {
 }
 
 /* Flatten the page frame: one column, no gradients, no negative offsets. */
+body,
 #header,
+.header-inner,
 #container,
 #center,
 #content {

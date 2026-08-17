@@ -21,18 +21,34 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Drupal install of Garland showed.
  */
 function garland_branding() {
+	$logo = '';
+
+	if ( has_custom_logo() ) {
+		// Returns '' when the attachment behind the setting has gone away, in
+		// which case the bundled logo below takes over.
+		$logo = wp_get_attachment_image(
+			get_theme_mod( 'custom_logo' ),
+			'full',
+			false,
+			array(
+				'id'  => 'logo',
+				// The site name follows in its own element, so the image adds
+				// nothing for a screen reader.
+				'alt' => '',
+			)
+		);
+	}
+
+	if ( '' === $logo ) {
+		$logo = sprintf(
+			'<img src="%s" width="89" height="89" alt="" id="logo" />',
+			esc_url( get_theme_file_uri( 'logo.svg' ) )
+		);
+	}
 	?>
 	<div id="logo-floater">
 		<div id="branding"><strong><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
-			<?php if ( has_custom_logo() ) : ?>
-				<?php
-				$logo_id = get_theme_mod( 'custom_logo' );
-				$logo    = wp_get_attachment_image_src( $logo_id, 'full' );
-				?>
-				<img src="<?php echo esc_url( $logo[0] ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" id="logo" />
-			<?php else : ?>
-				<img src="<?php echo esc_url( get_theme_file_uri( 'logo.svg' ) ); ?>" width="89" height="89" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" id="logo" />
-			<?php endif; ?>
+			<?php echo $logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<span><?php bloginfo( 'name' ); ?></span>
 			<?php if ( get_bloginfo( 'description', 'display' ) ) : ?>
 				<span id="site-slogan"><?php bloginfo( 'description' ); ?></span>
@@ -43,20 +59,36 @@ function garland_branding() {
 }
 
 /**
- * Print the breadcrumb trail.
+ * The page title block.
+ *
+ * Drupal drew the title from a page_title_block in the title_tabs region;
+ * every template that opens the content area calls this with its own title,
+ * and nothing is printed when there is no title to show.
+ *
+ * @param string $title Title, may contain the markup get_the_archive_title()
+ *                      wraps its prefix in.
  */
-function garland_breadcrumb() {
-	// Built from escaped values in garland_get_breadcrumb().
-	echo garland_get_breadcrumb(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+function garland_page_title( $title ) {
+	if ( '' === trim( (string) $title ) ) {
+		return;
+	}
+	?>
+	<div class="region region-title-tabs clearfix">
+		<div class="block block-page-title-block">
+			<h1 class="title"><?php echo wp_kses_post( $title ); ?></h1>
+		</div>
+	</div>
+	<?php
 }
 
 /**
  * Build the breadcrumb trail.
  *
  * Replaces Drupal's breadcrumb block with an equivalent for WordPress's
- * hierarchy: home, then the ancestors of the current page/term/post. Returns
- * an empty string when there is nothing to show, which is what header.php
- * checks before drawing the breadcrumb bar at all.
+ * hierarchy: home, then the ancestors of the current page/term/post. As in
+ * Drupal, the trail stops short of the current page -- the page title block
+ * names that. Returns an empty string when there is nothing to show, which is
+ * what header.php checks before drawing the breadcrumb bar at all.
  *
  * @return string Markup, or '' when there is no trail.
  */
@@ -73,46 +105,29 @@ function garland_get_breadcrumb() {
 		$post = get_queried_object();
 
 		if ( is_post_type_hierarchical( $post->post_type ) ) {
+			// get_post_ancestors() runs child-to-root; the trail runs the other way.
 			foreach ( array_reverse( get_post_ancestors( $post ) ) as $ancestor ) {
 				$crumbs[] = '<a href="' . esc_url( get_permalink( $ancestor ) ) . '">' . esc_html( get_the_title( $ancestor ) ) . '</a>';
 			}
 		} elseif ( 'post' === $post->post_type ) {
 			$categories = get_the_category( $post->ID );
+
 			if ( ! empty( $categories ) ) {
 				$crumbs[] = '<a href="' . esc_url( get_category_link( $categories[0]->term_id ) ) . '">' . esc_html( $categories[0]->name ) . '</a>';
 			}
 		}
-
-		$crumbs[] = esc_html( get_the_title( $post ) );
 	} elseif ( is_category() || is_tag() || is_tax() ) {
 		$term = get_queried_object();
 
 		if ( ! empty( $term->parent ) ) {
 			foreach ( array_reverse( get_ancestors( $term->term_id, $term->taxonomy ) ) as $ancestor_id ) {
 				$ancestor = get_term( $ancestor_id, $term->taxonomy );
-				$crumbs[] = '<a href="' . esc_url( get_term_link( $ancestor ) ) . '">' . esc_html( $ancestor->name ) . '</a>';
+
+				if ( $ancestor && ! is_wp_error( $ancestor ) ) {
+					$crumbs[] = '<a href="' . esc_url( get_term_link( $ancestor ) ) . '">' . esc_html( $ancestor->name ) . '</a>';
+				}
 			}
 		}
-
-		$crumbs[] = esc_html( single_term_title( '', false ) );
-	} elseif ( is_search() ) {
-		/* translators: %s: search query. */
-		$crumbs[] = esc_html( sprintf( __( 'Search for "%s"', 'garland' ), get_search_query() ) );
-	} elseif ( is_author() ) {
-		$crumbs[] = esc_html( get_the_author() );
-	} elseif ( is_archive() ) {
-		$crumbs[] = esc_html( wp_strip_all_tags( get_the_archive_title() ) );
-	} elseif ( is_404() ) {
-		$crumbs[] = esc_html__( 'Page not found', 'garland' );
-	} elseif ( is_home() ) {
-		$crumbs[] = esc_html( get_the_title( get_option( 'page_for_posts' ) ) );
-	}
-
-	// The last crumb is the current page and is not a link in Garland.
-	array_pop( $crumbs );
-
-	if ( empty( $crumbs ) ) {
-		return '';
 	}
 
 	$markup  = '<nav class="breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">';

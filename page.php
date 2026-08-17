@@ -8,11 +8,7 @@
 get_header();
 ?>
 
-<div class="region region-title-tabs clearfix">
-	<div class="block block-page-title-block">
-		<h1 class="title"><?php the_title(); ?></h1>
-	</div>
-</div>
+<?php garland_page_title( single_post_title( '', false ) ); ?>
 
 <?php get_template_part( 'template-parts/region', 'top' ); ?>
 

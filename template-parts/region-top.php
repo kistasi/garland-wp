@@ -19,7 +19,8 @@
 	</div>
 <?php endif; ?>
 
-<a id="main-content"></a>
+<?php // tabindex makes the skip link actually move focus here, not just scroll. ?>
+<div id="main-content" tabindex="-1"></div>
 
 <?php if ( is_active_sidebar( 'help' ) ) : ?>
 	<div class="region region-help">

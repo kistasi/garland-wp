@@ -126,11 +126,8 @@
   max-inline-size: 100%;
 }
 
-/* Widgets sit in the same visual box Drupal blocks did. */
-.widget {
-  margin-block: 0 1.5em;
-}
-
+/* Widgets sit in the same visual box Drupal blocks did; the spacing between
+   them is in css/layout.css, alongside the rest of the region layout. */
 .widget ul {
   margin-block-start: 0.35em;
   margin-inline-start: -0.5em;

@@ -179,6 +179,26 @@ function garland_color_schemes() {
 }
 
 /**
+ * Reduce a value to a #rrggbb colour, or to '' when it is not one.
+ *
+ * @param string $value Candidate colour.
+ * @return string '#rrggbb' or ''.
+ */
+function garland_sanitize_hex( $value ) {
+	$value = strtolower( trim( (string) $value ) );
+
+	if ( preg_match( '/^#[0-9a-f]{6}$/', $value ) ) {
+		return $value;
+	}
+
+	if ( preg_match( '/^#([0-9a-f])([0-9a-f])([0-9a-f])$/', $value, $m ) ) {
+		return '#' . $m[1] . $m[1] . $m[2] . $m[2] . $m[3] . $m[3];
+	}
+
+	return '';
+}
+
+/**
  * Convert a hex colour to an array of RGB components.
  */
 function garland_hex_to_rgb( $hex ) {
@@ -268,6 +288,9 @@ function garland_color_scheme_css( $scheme_id ) {
 		'on-header-muted'  => garland_tint( $top, 0.8 ),
 
 		'text'             => $c['text'],
+		// The default scheme's #898989 is exactly its text colour at this
+		// ratio, so every scheme gets a secondary ink that matches it.
+		'text-muted'       => garland_tint( $c['text'], 0.35 ),
 		'link'             => $link,
 		'link-hover'       => garland_shade( $link, 0.2 ),
 		'link-active'      => garland_tint( $link, 0.35 ),
@@ -290,11 +313,20 @@ function garland_color_scheme_css( $scheme_id ) {
 		'tab-bottom'       => garland_tint( $base, 0.51 ),
 	);
 
-	$css = ":root {\n";
-	foreach ( $tokens as $name => $value ) {
-		$css .= "\t--garland-{$name}: " . esc_html( $value ) . ";\n";
-	}
-	$css .= "}\n";
+	$declarations = '';
 
-	return $css;
+	foreach ( $tokens as $name => $value ) {
+		// esc_html() is the wrong tool in a stylesheet: only #rrggbb goes out.
+		$value = garland_sanitize_hex( $value );
+
+		if ( '' !== $value ) {
+			$declarations .= "\t--garland-{$name}: {$value};\n";
+		}
+	}
+
+	if ( '' === $declarations ) {
+		return '';
+	}
+
+	return ":root {\n{$declarations}}\n";
 }

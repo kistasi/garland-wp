@@ -18,6 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param WP_Customize_Manager $wp_customize Customizer instance.
  */
 function garland_customize_register( $wp_customize ) {
+	$defaults = garland_option_defaults();
+
 	$wp_customize->add_section(
 		'garland_options',
 		array(
@@ -30,7 +32,7 @@ function garland_customize_register( $wp_customize ) {
 	$wp_customize->add_setting(
 		'garland_width',
 		array(
-			'default'           => 'fluid',
+			'default'           => $defaults['garland_width'],
 			'sanitize_callback' => 'garland_sanitize_width',
 			'transport'         => 'refresh',
 		)
@@ -59,7 +61,7 @@ function garland_customize_register( $wp_customize ) {
 	$wp_customize->add_setting(
 		'garland_color_scheme',
 		array(
-			'default'           => 'default',
+			'default'           => $defaults['garland_color_scheme'],
 			'sanitize_callback' => 'garland_sanitize_color_scheme',
 			'transport'         => 'refresh',
 		)
@@ -76,30 +78,36 @@ function garland_customize_register( $wp_customize ) {
 		)
 	);
 
-	// Live preview for the built-in site identity controls.
-	if ( isset( $wp_customize->selective_refresh ) ) {
-		$wp_customize->get_setting( 'blogname' )->transport        = 'postMessage';
-		$wp_customize->get_setting( 'blogdescription' )->transport = 'postMessage';
+	// Live preview for the built-in site identity controls. Both settings are
+	// core's, so they are only ours to adjust when they are actually there.
+	if ( ! isset( $wp_customize->selective_refresh ) ) {
+		return;
+	}
 
-		$wp_customize->selective_refresh->add_partial(
-			'blogname',
-			array(
-				'selector'        => '#branding span',
-				'render_callback' => function () {
-					return get_bloginfo( 'name', 'display' );
-				},
-			)
-		);
+	$partials = array(
+		'blogname'        => array(
+			'selector'        => '#branding span',
+			'render_callback' => function () {
+				return get_bloginfo( 'name', 'display' );
+			},
+		),
+		'blogdescription' => array(
+			'selector'        => '#site-slogan',
+			'render_callback' => function () {
+				return get_bloginfo( 'description', 'display' );
+			},
+		),
+	);
 
-		$wp_customize->selective_refresh->add_partial(
-			'blogdescription',
-			array(
-				'selector'        => '#site-slogan',
-				'render_callback' => function () {
-					return get_bloginfo( 'description', 'display' );
-				},
-			)
-		);
+	foreach ( $partials as $id => $partial ) {
+		$setting = $wp_customize->get_setting( $id );
+
+		if ( ! $setting ) {
+			continue;
+		}
+
+		$setting->transport = 'postMessage';
+		$wp_customize->selective_refresh->add_partial( $id, $partial );
 	}
 }
 add_action( 'customize_register', 'garland_customize_register' );
@@ -108,12 +116,16 @@ add_action( 'customize_register', 'garland_customize_register' );
  * Sanitize the width setting.
  */
 function garland_sanitize_width( $value ) {
-	return in_array( $value, array( 'fluid', 'fixed' ), true ) ? $value : 'fluid';
+	$defaults = garland_option_defaults();
+
+	return in_array( $value, array( 'fluid', 'fixed' ), true ) ? $value : $defaults['garland_width'];
 }
 
 /**
  * Sanitize the colour scheme setting.
  */
 function garland_sanitize_color_scheme( $value ) {
-	return array_key_exists( $value, garland_color_schemes() ) ? $value : 'default';
+	$defaults = garland_option_defaults();
+
+	return array_key_exists( $value, garland_color_schemes() ) ? $value : $defaults['garland_color_scheme'];
 }

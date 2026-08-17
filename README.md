@@ -25,11 +25,11 @@ Then:
 | --- | --- |
 | `garland.info.yml` regions `primary_menu` / `secondary_menu` | nav menu locations `primary` / `secondary` |
 | regions `header`, `highlighted`, `help`, `sidebar_first`, `sidebar_second`, `footer` | widget areas of the same names |
-| region `breadcrumb` | `garland_breadcrumb()` in `inc/template-tags.php` |
-| region `title_tabs` (page-title block + local tasks) | page-title block markup in `single.php` / `page.php` / `index.php`; local tasks dropped (admin-only concept) |
+| region `breadcrumb` | `garland_get_breadcrumb()` in `inc/template-tags.php` |
+| region `title_tabs` (page-title block + local tasks) | `garland_page_title()`, called by `single.php` / `page.php` / `index.php` / `404.php`; local tasks dropped (admin-only concept) |
 | regions `page_top` / `page_bottom` | dropped; `wp_body_open()` / `wp_footer()` fill the same role |
 | `garland.libraries.yml` | `garland_scripts()` in `functions.php` |
-| `templates/page.html.twig` | `header.php` + `footer.php` (`#header`, `#container`, `#center`, `#content` and the sidebars keep their IDs) |
+| `templates/page.html.twig` | `header.php` + `footer.php` (`#header`, `#container`, `#center`, `#content` and the sidebars keep their IDs; `#header` spans the window and `.header-inner` holds the content) |
 | `templates/node.html.twig` | `template-parts/content.php`, `template-parts/content-page.php` |
 | `templates/comment.html.twig` | `garland_comment()` + `comments.php` |
 | `templates/block--system-branding-block.html.twig` | `garland_branding()` |

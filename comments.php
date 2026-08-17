@@ -58,11 +58,11 @@ if ( post_password_required() ) {
 	<?php
 	comment_form(
 		array(
-			'title_reply'        => __( 'Add new comment', 'garland' ),
-			'class_form'         => 'comment-form',
+			'title_reply'          => __( 'Add new comment', 'garland' ),
+			'class_form'           => 'comment-form',
 			'comment_notes_before' => '',
-			'label_submit'       => __( 'Save', 'garland' ),
-			'class_submit'       => 'form-submit button',
+			'label_submit'         => __( 'Save', 'garland' ),
+			'class_submit'         => 'form-submit button',
 		)
 	);
 	?>

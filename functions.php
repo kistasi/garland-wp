@@ -34,6 +34,11 @@ function garland_setup() {
 	add_theme_support( 'customize-selective-refresh-widgets' );
 	add_theme_support( 'responsive-embeds' );
 
+	// Block markup: core block styles, and the wide/full alignments that
+	// css/wordpress.css already constrains to the content column.
+	add_theme_support( 'wp-block-styles' );
+	add_theme_support( 'align-wide' );
+
 	add_theme_support(
 		'html5',
 		array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' )
@@ -83,7 +88,12 @@ function garland_widgets_init() {
 				'id'            => $id,
 				/* translators: %s: region name. */
 				'description'   => sprintf( __( 'Widgets in the %s region.', 'garland' ), $name ),
-				'before_widget' => '<div id="%1$s" class="block %2$s clearfix">',
+				/*
+				 * .block is what the ported Drupal CSS targets; .widget is the
+				 * WordPress convention, and what plugin and block styles
+				 * expect to find.
+				 */
+				'before_widget' => '<div id="%1$s" class="block widget %2$s clearfix">',
 				'after_widget'  => '</div>',
 				'before_title'  => '<h2 class="title">',
 				'after_title'   => '</h2>',
@@ -189,31 +199,35 @@ function garland_comment_classes( $classes ) {
 add_filter( 'comment_class', 'garland_comment_classes' );
 
 /**
- * Read a theme option, falling back to the theme default.
+ * Defaults for the theme's own Customizer settings.
+ *
+ * The single source of truth: inc/customizer.php registers the settings with
+ * these defaults and garland_get_option() falls back to them.
+ *
+ * @return array Setting name => default value.
  */
-function garland_get_option( $name ) {
-	$defaults = array(
+function garland_option_defaults() {
+	return array(
 		'garland_width'        => 'fluid',
 		'garland_color_scheme' => 'default',
 	);
+}
 
-	$default = isset( $defaults[ $name ] ) ? $defaults[ $name ] : '';
+/**
+ * Read a theme option, falling back to the theme default.
+ */
+function garland_get_option( $name ) {
+	$defaults = garland_option_defaults();
+	$default  = isset( $defaults[ $name ] ) ? $defaults[ $name ] : '';
 
 	return get_theme_mod( $name, $default );
 }
 
 /**
- * Excerpt tweaks: Garland's teaser read-more link.
+ * Excerpt tweaks: the teaser trails off rather than ending in "[...]"; the
+ * read-more link itself is a node link, printed by garland_entry_links().
  */
 function garland_excerpt_more( $more ) {
 	return '&hellip;';
 }
 add_filter( 'excerpt_more', 'garland_excerpt_more' );
-
-/**
- * Give the search form Garland's markup hooks.
- */
-function garland_search_form_class( $form ) {
-	return str_replace( '<form ', '<form class="search-form" ', $form );
-}
-add_filter( 'get_search_form', 'garland_search_form_class' );
