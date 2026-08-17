@@ -1,0 +1,118 @@
+/**
+ * @file
+ * Garland layout styling.
+ */
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#header, #container {
+  padding: 0 20px;
+}
+
+#header {
+  height: 120px;
+}
+
+#header #logo-floater {
+  position: absolute;
+}
+
+/**
+ * Primary navigation
+ */
+.region-primary-menu {
+  /* Needs to sit on top of the #header border. */
+  margin-top: -1px;
+  padding: 0;
+  float: right; /* LTR */
+  position: relative;
+  z-index: 4;
+}
+
+/**
+ * Secondary navigation
+ */
+.region-secondary-menu {
+  margin: 0;
+  padding: 18px 0 0;
+  float: right; /* LTR */
+  clear: right; /* LTR */
+  position: relative;
+  z-index: 4;
+}
+
+/**
+ * Breadcrumb.
+ */
+#breadcrumb {
+  /* The height of the breadcrumb box minus its borders. */
+  height: 32px;
+
+  border-top-left-radius:2px;
+  border-top-right-radius:2px;
+}
+
+#breadcrumb-inner {
+  min-height: 100%;
+  padding: 0 25px;
+}
+
+/**
+ * The container for the 3 columns of content and sidebars.
+ */
+#container {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+}
+
+/**
+ * Layout for the 3 columns.
+ */
+.sidebar {
+  flex: 0 0 195px;
+}
+
+#center {
+  width: auto;
+  flex: 1;
+  order: 2;
+
+  /* The height of the breadcrumb box. */
+  margin-top: -34px;
+}
+
+#sidebar-first {
+  order: 1;
+  padding-right: 15px;
+}
+
+#sidebar-second {
+  order: 3;
+  padding-left: 15px;
+}
+
+/**
+ * Element padding and margins.
+ */
+#content {
+  padding: 0 25px;
+}
+
+.sidebar,
+#content {
+  margin-top: 16px;
+}
+
+#container .sidebar .block {
+  margin: 0 0 1.5em 0;
+}
+
+#container .region-footer {
+  float: none;
+  clear: both;
+  margin: 4em 0 0;
+}

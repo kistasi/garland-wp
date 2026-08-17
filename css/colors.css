@@ -1,0 +1,76 @@
+/**
+ * @file
+ * Garland colors.
+ */
+
+body {
+  font: 76%/170% Verdana, sans-serif;
+  color: #494949;
+}
+
+#header {
+  /*
+  This is a border rather than part of the gradient because webkit can't render
+  hard transitions in gradients.
+  This also requires the primary menu to be moved up 1px.
+  */
+  border-top: solid white 1px;
+  border-bottom: solid white 1px;
+
+  background-image: linear-gradient(
+    to bottom,
+    #134D95 1px,
+    #2384C0 5px,
+    #59B4ED 116px
+  );
+  background-color: #59B4ED;
+  box-shadow: inset 0px -3px 4px -2px #2881D6;
+}
+
+/**
+ * Container.
+ *
+ * This is actually the background colour for the sidebars, but is here because
+ * of the outer padding on this element.
+ */
+#container {
+  background-image: linear-gradient(
+    to bottom,
+    #CAE2F0 0px,
+    #EDF5FA 178px
+  );
+}
+
+#center {
+  background-image: linear-gradient(
+    to bottom,
+    #EBF4F9 0px,
+    #FFFFFF 178px
+  );
+}
+
+/**
+ * Breadcrumb.
+ *
+ * This needs two DIVs to make both ends of the gradient.
+ */
+#breadcrumb {
+  background-image: linear-gradient(
+    to right,
+    #BDDFF6,
+    #D5EBF9 40px
+  );
+  border: solid 1px white;
+  box-shadow:
+      -3px -3px 4px -2px #2881D6,
+      3px -3px 4px -2px #2881D6;
+}
+
+#breadcrumb-inner {
+  background-image: linear-gradient(
+    to left,
+    #BDDFF6,
+    #D5EBF9 40px,
+    rgba(0, 0, 0, 0) 40px
+  );
+}

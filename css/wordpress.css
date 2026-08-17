@@ -1,0 +1,316 @@
+/**
+ * @file
+ * WordPress-specific styling for Garland.
+ *
+ * Three jobs:
+ *  1. Re-supply the handful of utility classes Garland inherited from Drupal's
+ *     base theme (clearfix, visually-hidden, hidden) and which have no
+ *     WordPress equivalent.
+ *  2. Map WordPress's generated classes onto the Garland ones the ported CSS
+ *     targets (current-menu-item -> a.active, comment nesting -> .indented).
+ *  3. Cover the markup WordPress produces that Drupal never did: alignment
+ *     classes, captions, galleries, sticky posts, the block editor's own
+ *     classes.
+ */
+
+/**
+ * 1. Utilities from Drupal's base theme.
+ */
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.visually-hidden,
+.screen-reader-text {
+  position: absolute !important;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  word-wrap: normal;
+}
+
+.visually-hidden.focusable:active,
+.visually-hidden.focusable:focus,
+.screen-reader-text:focus {
+  position: static !important;
+  overflow: visible;
+  clip: auto;
+  width: auto;
+  height: auto;
+  background: #fff;
+  padding: 2px 10px;
+  z-index: 1000;
+}
+
+.hidden {
+  display: none;
+}
+
+/**
+ * 2. WordPress class -> Garland class mapping.
+ */
+
+/* Active trail in the primary menu: Garland styled a.active. */
+.region-primary-menu ul li.current-menu-item > a,
+.region-primary-menu ul li.current-menu-ancestor > a,
+.region-primary-menu ul li.current_page_item > a {
+  color: #fff;
+  background: transparent url(../images/bg-navigation-item-hover.png) no-repeat 50% 0;
+}
+
+.region-secondary-menu ul li.current-menu-item > a,
+.region-secondary-menu ul li.current-menu-ancestor > a {
+  font-weight: bold;
+}
+
+/* wp_nav_menu emits a plain <ul>; Garland's rules key off .menu. */
+.region-primary-menu ul.menu,
+.region-secondary-menu ul.menu {
+  list-style: none;
+  list-style-image: none;
+  padding: 0;
+}
+
+/* Breadcrumb: an <ol> rendered inline. */
+.region-breadcrumb ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  list-style-image: none;
+}
+
+.region-breadcrumb li {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+.region-breadcrumb li + li::before {
+  content: " » ";
+}
+
+/* Comment threads: wp_list_comments nests in ul.children where Drupal used
+   .indented, and the outer list must not inherit the menu bullet. */
+.comment-list,
+.comment-list .children {
+  list-style: none;
+  list-style-image: none;
+  padding: 0;
+  margin: 0;
+}
+
+.comment-list .children {
+  margin-left: 25px; /* LTR */
+}
+
+.comment-list > li.comment {
+  list-style: none;
+}
+
+.comment-respond {
+  margin: 1.5em 0;
+  padding-bottom: 1.5em;
+}
+
+.comment-reply-title {
+  font-size: 160%;
+  line-height: 130%;
+}
+
+.comment-form label {
+  display: block;
+  font-weight: bold;
+}
+
+.comment-form input[type="text"],
+.comment-form input[type="email"],
+.comment-form input[type="url"],
+.comment-form textarea {
+  max-width: 100%;
+}
+
+/* Widgets sit in the same visual box Drupal blocks did. */
+.widget {
+  margin: 0 0 1.5em;
+}
+
+.widget ul {
+  margin: 0.35em 0 0 -0.5em; /* LTR */
+}
+
+/* Pager, in the same visual language as the local tasks. */
+.pager__items {
+  margin: 1.5em 0;
+  padding: 0;
+  list-style: none;
+  list-style-image: none;
+  text-align: center;
+}
+
+.pager__item {
+  display: inline-block;
+  margin: 0 0.25em;
+}
+
+.pager__item .current {
+  font-weight: bold;
+}
+
+/**
+ * 3. WordPress-generated markup.
+ */
+.alignleft {
+  display: inline;
+  float: left;
+  margin-right: 1.5em;
+}
+
+.alignright {
+  display: inline;
+  float: right;
+  margin-left: 1.5em;
+}
+
+.aligncenter {
+  clear: both;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.alignwide,
+.alignfull {
+  max-width: 100%;
+}
+
+img,
+.wp-caption img,
+.wp-block-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+.wp-caption {
+  margin-bottom: 1.5em;
+  max-width: 100%;
+}
+
+.wp-caption-text,
+.wp-block-image figcaption {
+  font-size: 0.92em;
+  color: #898989;
+  text-align: center;
+  margin: 0.5em 0;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1em -0.5em;
+}
+
+.gallery-item {
+  margin: 0 0.5em 1em;
+  text-align: center;
+}
+
+.gallery-columns-2 .gallery-item { width: calc(50% - 1em); }
+.gallery-columns-3 .gallery-item { width: calc(33.33% - 1em); }
+.gallery-columns-4 .gallery-item { width: calc(25% - 1em); }
+
+.sticky .title::before {
+  content: "★ ";
+  color: #ffae00;
+}
+
+.bypostauthor > .comment-body .submitted,
+.bypostauthor .submitted {
+  font-weight: bold;
+}
+
+.post-password-form input[type="password"] {
+  max-width: 100%;
+}
+
+.node-navigation {
+  margin: 1.5em 0;
+}
+
+.node-navigation .nav-next {
+  float: right; /* LTR */
+}
+
+.wp-block-quote,
+blockquote {
+  border-left: 3px solid #d3e7f4; /* LTR */
+  margin: 1em 0;
+  padding-left: 1em; /* LTR */
+}
+
+.wp-block-code,
+pre {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #d9eaf5;
+  padding: 0.75em;
+}
+
+/**
+ * Small screens.
+ *
+ * Garland predates responsive design; the flex layout in layout.css needs a
+ * stacking fallback so the sidebars do not squeeze the content on phones.
+ */
+@media all and (max-width: 700px) {
+  #header,
+  #container {
+    padding: 0 10px;
+  }
+
+  #header {
+    height: auto;
+    min-height: 120px;
+    overflow: hidden;
+  }
+
+  #header #logo-floater {
+    position: static;
+  }
+
+  .region-primary-menu,
+  .region-secondary-menu {
+    float: none;
+    clear: both;
+  }
+
+  #container {
+    display: block;
+  }
+
+  #center {
+    margin-top: -34px;
+  }
+
+  .sidebar {
+    flex: none;
+    padding: 0;
+  }
+
+  #content {
+    padding: 0 10px;
+  }
+
+  #branding,
+  #branding a:link,
+  #branding a:visited {
+    line-height: 1.4;
+    white-space: normal;
+  }
+
+  #branding img {
+    padding-right: 10px; /* LTR */
+  }
+}

@@ -1,0 +1,29 @@
+/*
+Theme Name: Garland
+Theme URI: https://www.drupal.org/project/garland
+Author: Stefan Nagtegaal, Steven Wittens; WordPress port
+Description: A multi-column theme which can be configured to modify colors and switch between fixed and fluid width layouts. A port of the classic Drupal Garland theme to WordPress.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.6
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: garland
+Tags: two-columns, three-columns, right-sidebar, left-sidebar, custom-menu, custom-logo, featured-images, threaded-comments, translation-ready, blog
+*/
+
+/**
+ * The actual Garland styles live in the css/ directory and are enqueued from
+ * functions.php in this order:
+ *
+ *   css/layout.css   - structural layout
+ *   css/colors.css   - base colors and gradients
+ *   css/garland.css  - general element styling (Drupal's style.css)
+ *   css/wordpress.css - WordPress-specific classes and Drupal-to-WP mappings
+ *   css/print.css    - print styles (media="print")
+ *   css/style-rtl.css - right-to-left overrides (RTL locales only)
+ *
+ * This file only carries the theme header, so image paths in the ported CSS
+ * stay relative to css/ exactly as they were in the Drupal theme.
+ */
