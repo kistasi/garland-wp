@@ -26,10 +26,7 @@
 
 <div id="header">
 
-	<div class="region region-header clearfix">
-		<?php garland_branding(); ?>
-		<?php dynamic_sidebar( 'header' ); ?>
-	</div>
+	<?php garland_branding(); ?>
 
 	<?php if ( has_nav_menu( 'primary' ) ) : ?>
 		<div class="region region-primary-menu">
@@ -64,6 +61,20 @@
 				);
 				?>
 			</nav>
+		</div>
+	<?php endif; ?>
+
+	<?php
+	/*
+	 * The header region is printed last on purpose. The branding is taken out
+	 * of flow by #logo-floater and the two menu regions are floated right, so
+	 * any in-flow content placed before them would land on top of the logo and
+	 * push the floats out of #header. See the header rules in css/wordpress.css.
+	 */
+	?>
+	<?php if ( is_active_sidebar( 'header' ) ) : ?>
+		<div class="region region-header clearfix">
+			<?php dynamic_sidebar( 'header' ); ?>
 		</div>
 	<?php endif; ?>
 

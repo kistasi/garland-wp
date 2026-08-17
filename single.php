@@ -19,8 +19,6 @@ get_header();
 
 <?php get_template_part( 'template-parts/region', 'top' ); ?>
 
-<a id="main-content"></a>
-
 <div class="clearfix">
 	<?php
 	while ( have_posts() ) :

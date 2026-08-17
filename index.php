@@ -10,10 +10,6 @@
 get_header();
 ?>
 
-<?php get_template_part( 'template-parts/region', 'top' ); ?>
-
-<a id="main-content"></a>
-
 <?php if ( ! is_front_page() && ( is_home() || is_archive() || is_search() ) ) : ?>
 	<div class="region region-title-tabs clearfix">
 		<div class="block block-page-title-block">
@@ -33,6 +29,8 @@ get_header();
 	</div>
 	<?php the_archive_description( '<div class="archive-description">', '</div>' ); ?>
 <?php endif; ?>
+
+<?php get_template_part( 'template-parts/region', 'top' ); ?>
 
 <div class="clearfix">
 	<?php if ( have_posts() ) : ?>

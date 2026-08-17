@@ -27,16 +27,21 @@ if ( post_password_required() ) {
 			?>
 		</h2>
 
-		<?php
-		wp_list_comments(
-			array(
-				'style'       => 'ol',
-				'callback'    => 'garland_comment',
-				'short_ping'  => true,
-				'avatar_size' => 48,
-			)
-		);
+		<ol class="comment-list">
+			<?php
+			// garland_comment() prints the <li>; the list itself is ours to open.
+			wp_list_comments(
+				array(
+					'style'       => 'ol',
+					'callback'    => 'garland_comment',
+					'short_ping'  => true,
+					'avatar_size' => 48,
+				)
+			);
+			?>
+		</ol>
 
+		<?php
 		the_comments_pagination(
 			array(
 				'prev_text' => __( '‹ previous', 'garland' ),

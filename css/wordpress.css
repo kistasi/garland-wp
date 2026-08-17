@@ -45,6 +45,31 @@
   z-index: 1000;
 }
 
+/*
+ * Link lists. garland.css styles ul.links li on the assumption that Drupal
+ * core's links.css has already stripped the markers and laid the inline
+ * variant out horizontally; nothing in WordPress supplies those base rules, so
+ * the post and comment link lists rendered as bulleted stacks without them.
+ */
+ul.links,
+ul.inline {
+  padding: 0;
+  list-style: none;
+  list-style-image: none;
+}
+
+ul.links.inline,
+ul.inline {
+  display: inline;
+}
+
+ul.links.inline li,
+ul.inline li {
+  display: inline;
+  list-style: none;
+  list-style-image: none;
+}
+
 .hidden {
   display: none;
 }
@@ -52,6 +77,45 @@
 /**
  * 2. WordPress class -> Garland class mapping.
  */
+
+/*
+ * Header.
+ *
+ * layout.css takes the branding out of flow (#logo-floater is absolutely
+ * positioned) and pins #header to a fixed 120px height, which leaves the
+ * header widget area nowhere to go: its content landed on top of the logo,
+ * and the height it added pushed the right-floated menu regions past the
+ * bottom of #header. Those escaped floats then shrank #container -- which is
+ * a flex container, and so a block formatting context -- breaking the page
+ * width and the fixed-width centring.
+ *
+ * header.php prints the header region after the menus so the floats keep
+ * their position. These rules anchor the branding to #header itself rather
+ * than to its static position, contain the floats, and let #header grow
+ * downwards to hold the widgets.
+ */
+#header {
+  position: relative;
+  height: auto;
+  min-height: 120px;
+}
+
+#header::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#header #logo-floater {
+  top: 0;
+  left: 20px; /* LTR */ /* Matches #header's own horizontal padding. */
+}
+
+/* Clear the branding band, whose height is #branding's 120px line-height. */
+.region-header {
+  padding-top: 120px;
+  padding-bottom: 10px;
+}
 
 /* Active trail in the primary menu: Garland styled a.active. */
 .region-primary-menu ul li.current-menu-item > a,
@@ -278,6 +342,11 @@ pre {
 
   #header #logo-floater {
     position: static;
+  }
+
+  /* Branding is back in flow here, so its reserved band is not needed. */
+  .region-header {
+    padding-top: 0;
   }
 
   .region-primary-menu,

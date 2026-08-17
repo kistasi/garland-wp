@@ -14,7 +14,7 @@ get_header();
 	</div>
 </div>
 
-<a id="main-content"></a>
+<?php get_template_part( 'template-parts/region', 'top' ); ?>
 
 <div class="clearfix">
 	<div class="node">
